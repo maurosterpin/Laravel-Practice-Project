@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\UpdateInfoRequest;
+use App\Http\Requests\UpdatePasswordRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,5 +55,25 @@ class AuthController extends Controller
         return response([
             'message' => 'success'
         ])->withCookie($cookie); 
+    }
+
+    public function updateInfo(UpdateInfoRequest $request)
+    {
+        $user = $request->user();
+
+        $user->update($request->only('first_name', 'last_name', 'email'));
+
+        return response($user, Response::HTTP_ACCEPTED);
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request)
+    {
+        $user = $request->user();
+
+        $user->update([
+            'password' => \Hash::make($request->input('password'))
+        ]);
+
+        return response($user, Response::HTTP_ACCEPTED);
     }
 }
